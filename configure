@@ -975,6 +975,7 @@ Special configuration feature:
                                            android-mips for Android MIPS
                                            android-x86 for Android x86
                                            ps3 for PlayStation 3
+                                           switch for Nintendo Switch
 
 Game engines:
   --enable-all-engines     enable all engines, including those which are
@@ -1706,6 +1707,7 @@ switch)
 	datarootdir='${prefix}/data'
 	datadir='${datarootdir}'
 	docdir='${prefix}/doc'
+	PKG_CONFIG_LIBDIR=$DEVKITPRO/portlibs/switch/lib/pkgconfig
 	;;
 tizen)
  	_host_os=tizen
@@ -2902,12 +2904,13 @@ case $_host_os in
 		_pkgconfig="$DEVKITPRO/portlibs/switch/bin/aarch64-none-elf-pkg-config"
 		_libcurlpath="$DEVKITPRO/portlibs/switch/bin"
 		_sdlpath="$DEVKITPRO/portlibs/switch/bin"
+		_freetypepath="$DEVKITPRO/portlibs/switch/bin"
 		append_var DEFINES "-DSWITCH -D__SWITCH__ -DNINTENDO_SWITCH"
 		append_var CXXFLAGS "-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE -ftls-model=local-exec"
 		append_var CXXFLAGS "-ffunction-sections -fdata-sections"
 		append_var CXXFLAGS "-I$DEVKITPRO/libnx/include -I$DEVKITPRO/portlibs/switch/include"
 		append_var LDFLAGS "-L$DEVKITPRO/libnx/lib -L$DEVKITPRO/portlibs/switch/lib"
-		append_var LDFLAGS "-specs=$DEVKITPRO/libnx/switch.specs"
+		append_var LIBS "-specs=$DEVKITPRO/libnx/switch.specs"
 		add_line_to_config_mk 'SWITCH = 1'
 		if test "$_debug_build" = yes; then
 			append_var DEFINES "-D__SWITCH_DEBUG__"
@@ -3411,7 +3414,8 @@ if test -n "$_host"; then
 			# graphics. But OpenGL works when it is enabled from the start.
 			# This might be related to a known crash on OpenGL de-init due
 			# to the OpenGL implementation on this platform.
-			_opengl_mode=gles2
+			_opengl=yes
+			_opengl_shaders=yes
 			_vkeybd=yes
 			_port_mk="backends/platform/sdl/switch/switch.mk"
 			;;
@@ -5146,6 +5150,9 @@ EOF
 		mingw*)
 			OPENGL_LIBS="-lopengl32"
 			;;
+		switch)
+			OPENGL_LIBS="-lEGL"
+			;;
 		*)
 			OPENGL_LIBS="-lGL"
 			;;
@@ -5162,10 +5169,11 @@ EOF
 		if test "$_opengl_shaders" = auto; then
 			_opengl_shaders=$_glew
 		fi
-		if test "$_opengl_shaders" = yes && test "$_opengles2" = no && test "$_glew" = no; then
+		if test "$_opengl_shaders" = yes && test "$_opengles2" = no && test "$_glew" = no && test "$_host_os" != switch; then
 			echo "WARNING: OpenGL Shader support requires GLEW!"
 			_opengl_shaders=no
 		fi
+
 	else
 		_opengl_shaders=no
 	fi

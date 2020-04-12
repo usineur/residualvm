@@ -11,7 +11,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -20,45 +20,35 @@
  *
  */
 
-#ifndef GRAPHICS_OPENGL_SYSTEM_HEADERS_H
-#define GRAPHICS_OPENGL_SYSTEM_HEADERS_H
+#include <switch.h>
 
 #include "common/scummsys.h"
+#include "backends/platform/sdl/switch/switch.h"
+#include "backends/plugins/sdl/sdl-provider.h"
+#include "base/main.h"
 
-#ifdef USE_GLES2
+int main(int argc, char *argv[]) {
+	socketInitializeDefault();
+	nxlinkStdio();
 
-#define GL_GLEXT_PROTOTYPES
-#ifdef IPHONE
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#else
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#endif
-#undef GL_GLEXT_PROTOTYPES
+	// Create our OSystem instance
+	g_system = new OSystem_Switch();
+	assert(g_system);
 
-#ifndef GL_BGRA
-#	define GL_BGRA GL_BGRA_EXT
-#endif
+	// Pre initialize the backend
+	((OSystem_Switch *)g_system)->init();
 
-#if !defined(GL_UNPACK_ROW_LENGTH)
-// The Android SDK does not declare GL_UNPACK_ROW_LENGTH_EXT
-#define GL_UNPACK_ROW_LENGTH 0x0CF2
+#ifdef DYNAMIC_MODULES
+	PluginManager::instance().addPluginProvider(new SDLPluginProvider());
 #endif
 
-#elif defined(USE_GLEW)
-#include <GL/glew.h>
-#elif defined(NINTENDO_SWITCH)
-#include "graphics/glad/glad.h"
-#elif defined(SDL_BACKEND) && defined(USE_OPENGL)
-#include <SDL_opengl.h>
-#elif defined(USE_OPENGL)
-#include <GL/gl.h>
-#endif
+	// Invoke the actual ScummVM main entry point:
+	int res = scummvm_main(argc, argv);
 
-#endif
+	// Free OSystem
+	g_system->destroy();
 
-#if !defined(GL_MAX_SAMPLES)
-// The Android SDK and SDL1 don't declare GL_MAX_SAMPLES
-#define GL_MAX_SAMPLES 0x8D57
-#endif
+	socketExit();
+
+	return res;
+}

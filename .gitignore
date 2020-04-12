@@ -169,6 +169,12 @@ dists/msvc*/**
 out/
 /*.xcodeproj
 
+#Ignore Switch files
+switch_release/
+residualvm.elf
+residualvm.nro
+residualvm_switch.zip
+
 #Ignore gmon.out created by gprof
 gmon.out
 

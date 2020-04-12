@@ -46,7 +46,11 @@
 #include "backends/graphics/surfacesdl/surfacesdl-graphics.h"
 
 #ifdef USE_OPENGL
+#ifdef NINTENDO_SWITCH
+#include "backends/graphics/switchsdl/switchsdl-graphics.h"
+#else
 #include "backends/graphics/openglsdl/openglsdl-graphics.h"
+#endif
 //#include "graphics/cursorman.h" // ResidualVM
 #include "graphics/opengl/context.h" // ResidualVM specific
 #endif
@@ -277,7 +281,7 @@ void OSystem_SDL::detectDesktopResolution() {
 #ifdef USE_OPENGL
 void OSystem_SDL::detectFramebufferSupport() {
 	_capabilities.openGLFrameBuffer = false;
-#if defined(USE_GLES2)
+#if defined(USE_GLES2) || defined(NINTENDO_SWITCH)
 	// Framebuffers are always available with GLES2
 	_capabilities.openGLFrameBuffer = true;
 #elif !defined(AMIGAOS)
@@ -308,6 +312,7 @@ void OSystem_SDL::detectFramebufferSupport() {
 void OSystem_SDL::detectAntiAliasingSupport() {
 	_capabilities.openGLAntiAliasLevels.clear();
 
+#ifndef NINTENDO_SWITCH
 	int requestedSamples = 2;
 	while (requestedSamples <= 32) {
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
@@ -348,6 +353,7 @@ void OSystem_SDL::detectAntiAliasingSupport() {
 
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
+#endif
 }
 
 #endif // USE_OPENGL
@@ -448,7 +454,11 @@ void OSystem_SDL::setupScreen(uint screenW, uint screenH, bool fullscreen, bool 
 		delete _graphicsManager;
 
 		if (accel3d) {
+#ifdef NINTENDO_SWITCH
+			_graphicsManager = sdlGraphicsManager = new SwitchSdlGraphicsManager(_eventSource, _window, _capabilities);
+#else
 			_graphicsManager = sdlGraphicsManager = new OpenGLSdlGraphicsManager(_eventSource, _window, _capabilities);
+#endif
 		} else {
 			_graphicsManager = sdlGraphicsManager = new SurfaceSdlGraphicsManager(_eventSource, _window, _capabilities);
 		}
