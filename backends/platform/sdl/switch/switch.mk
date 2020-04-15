@@ -1,14 +1,14 @@
 residualvm.nro: $(EXECUTABLE)
 	mkdir -p ./switch_release/residualvm
 	nacptool --create "ResidualVM" "usineur" "$(VERSION)" ./switch_release/residualvm.nacp
-	elf2nro $(EXECUTABLE) ./switch_release/residualvm/residualvm.nro --icon=./dists/switch/icon.jpg --nacp=./switch_release/residualvm.nacp
+	elf2nro $(EXECUTABLE) ./switch_release/residualvm/residualvm.nro --icon=$(srcdir)/dists/switch/icon.jpg --nacp=./switch_release/residualvm.nacp
 
 residualvm_switch.zip: residualvm.nro
 	rm -f ./switch_release/residualvm.nacp
 	mkdir -p ./switch_release/residualvm/data
 	mkdir -p ./switch_release/residualvm/doc
-	cp ./backends/vkeybd/packs/vkeybd_default.zip ./switch_release/residualvm/data
-	cp ./backends/vkeybd/packs/vkeybd_small.zip ./switch_release/residualvm/data
+	cp $(srcdir)/backends/vkeybd/packs/vkeybd_default.zip ./switch_release/residualvm/data
+	cp $(srcdir)/backends/vkeybd/packs/vkeybd_small.zip ./switch_release/residualvm/data
 	cp $(DIST_FILES_THEMES) ./switch_release/residualvm/data
 ifdef DIST_FILES_ENGINEDATA
 	cp $(DIST_FILES_ENGINEDATA) ./switch_release/residualvm/data
