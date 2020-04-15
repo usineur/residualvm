@@ -50,6 +50,10 @@ SwitchSdlEventSource::SwitchSdlEventSource() {
 			_simulatedClickStartTime[port][i] = 0;
 		}
 	}
+#if SDL_VERSION_ATLEAST(2,0,10)
+	// ensure that touch doesn't create double-events
+	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+#endif
 }
 
 bool SwitchSdlEventSource::pollEvent(Common::Event &event) {
