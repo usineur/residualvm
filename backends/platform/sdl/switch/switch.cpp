@@ -26,7 +26,8 @@
 #include "common/config-manager.h"
 
 #include "backends/events/switchsdl/switchsdl-events.h"
-#include "backends/fs/posix/posix-fs-factory.h"
+#include "backends/fs/posix-drives/posix-drives-fs-factory.h"
+#include "backends/fs/posix-drives/posix-drives-fs.h"
 #include "backends/platform/sdl/switch/switch.h"
 #include "backends/saves/posix/posix-saves.h"
 
@@ -38,7 +39,11 @@ OSystem_Switch::OSystem_Switch(Common::String baseConfigName)
 
 void OSystem_Switch::init() {
 	// Initialze File System Factory
-	_fsFactory = new POSIXFilesystemFactory();
+	DrivesPOSIXFilesystemFactory *fsFactory = new DrivesPOSIXFilesystemFactory();
+	fsFactory->addDrive("sdmc:");
+	fsFactory->configureBuffering(DrivePOSIXFilesystemNode::kBufferingModeScummVM, 2048);
+
+	_fsFactory = fsFactory;
 
 	// Invoke parent implementation of this method
 	OSystem_SDL::init();

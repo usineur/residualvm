@@ -144,6 +144,8 @@ MODULE_OBJS += \
 	fs/posix/posix-fs.o \
 	fs/posix/posix-fs-factory.o \
 	fs/posix/posix-iostream.o \
+	fs/posix-drives/posix-drives-fs.o \
+	fs/posix-drives/posix-drives-fs-factory.o \
 	fs/chroot/chroot-fs-factory.o \
 	fs/chroot/chroot-fs.o \
 	plugins/posix/posix-provider.o \
